@@ -4,6 +4,7 @@ python-dotenv==1.0.1
 
 # --- OpenAI GPT ---
 openai==0.28.0
+tiktoken==0.7.0
 
 # --- API (для Mini App) ---
 fastapi==0.115.0

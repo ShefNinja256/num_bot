@@ -12,8 +12,12 @@ dp = Dispatcher(bot)
 # --- Главное меню ---
 def main_menu():
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("🔮 Узнать своё число")
-    kb.add("❤️ Проверить совместимость")
+    kb.add(
+        types.KeyboardButton(
+            text="Открыть Mini App 🔮",
+            web_app=types.WebAppInfo(url="https://num-bot.vercel.app")  # ссылка с Vercel
+        )
+    )
     return kb
 
 
