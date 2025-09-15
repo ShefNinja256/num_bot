@@ -3,7 +3,7 @@ async function analyzeSingle() {
     const date = document.getElementById("date_single").value;
     if (!date) return alert("Введите дату!");
   
-    const res = await fetch("http://127.0.0.1:8000/analyze", {
+    const res = await fetch("https://numbot-production.up.railway.app/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ date })
@@ -22,7 +22,7 @@ async function analyzeSingle() {
     const d2 = document.getElementById("date_male").value;
     if (!d1 || !d2) return alert("Введите обе даты!");
   
-    const res = await fetch("http://127.0.0.1:8000/compat", {
+    const res = await fetch("https://numbot-production.up.railway.app/compat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ date1: d1, date2: d2 })
