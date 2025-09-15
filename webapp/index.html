@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Нумеролог 🔮</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f3f3f3; 
+      text-align: center; 
+      padding: 20px;
+    }
+    h2 { color: #6a1b9a; }
+    input {
+      padding: 10px; margin: 10px; 
+      border-radius: 6px; border: 1px solid #ccc; 
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px; 
+      border: none; border-radius: 6px; 
+      background: #6a1b9a; color: white; 
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔮 Нумерологический расчёт</h2>
+  <p>Введите дату рождения:</p>
+  <input type="text" id="date" placeholder="ДД.ММ.ГГГГ" />
+  <br />
+  <button onclick="sendData()">Рассчитать</button>
+
+  <script>
+    function sendData() {
+      const date = document.getElementById("date").value;
+      if (!date) {
+        alert("Введите дату!");
+        return;
+      }
+      Telegram.WebApp.sendData(date); // отправляем в бота
+    }
+    Telegram.WebApp.ready();
+  </script>
+</body>
+</html>
