@@ -4,46 +4,7 @@
   <meta charset="UTF-8" />
   <title>Нумеролог 🔮</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      background: url("https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80") no-repeat center center fixed;
-      background-size: cover;
-    }
-    h2 { color: #ffd54f; text-shadow: 0 0 8px #000; }
-    .container {
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      display: inline-block;
-      width: 90%;
-      max-width: 400px;
-    }
-    input {
-      padding: 10px;
-      margin: 10px;
-      border-radius: 6px;
-      border: none;
-      width: 80%;
-      text-align: center;
-      font-size: 16px;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      border: none;
-      border-radius: 6px;
-      background: #6a1b9a;
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .hidden { display: none; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h2>🔮 Нумерологический расчёт</h2>
@@ -57,7 +18,7 @@
       <p>Введите дату рождения:</p>
       <input type="text" id="date_single" placeholder="ДД.ММ.ГГГГ" />
       <br />
-      <button onclick="sendSingle()">Рассчитать</button>
+      <button onclick="analyzeSingle()">Рассчитать</button>
     </div>
 
     <!-- Совместимость -->
@@ -65,10 +26,15 @@
       <p>Введите даты рождения:</p>
       <input type="text" id="date_female" placeholder="Женщина: ДД.ММ.ГГГГ" /><br />
       <input type="text" id="date_male" placeholder="Мужчина: ДД.ММ.ГГГГ" /><br />
-      <button onclick="sendCompat()">Проверить совместимость</button>
+      <button onclick="analyzeCompat()">Проверить совместимость</button>
     </div>
   </div>
 
+  <!-- 🔽 здесь будет результат -->
+  <div id="result" class="container"></div>
+
+  <!-- Подключаем JS -->
+  <script src="app.js"></script>
   <script>
     function showSingle() {
       document.getElementById("single").classList.remove("hidden");
@@ -78,19 +44,6 @@
     function showCompat() {
       document.getElementById("compat").classList.remove("hidden");
       document.getElementById("single").classList.add("hidden");
-    }
-
-    function sendSingle() {
-      const date = document.getElementById("date_single").value;
-      if (!date) return alert("Введите дату!");
-      Telegram.WebApp.sendData(date);
-    }
-
-    function sendCompat() {
-      const d1 = document.getElementById("date_female").value;
-      const d2 = document.getElementById("date_male").value;
-      if (!d1 || !d2) return alert("Введите обе даты!");
-      Telegram.WebApp.sendData(d1 + " " + d2);
     }
 
     Telegram.WebApp.ready();
