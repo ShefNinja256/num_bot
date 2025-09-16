@@ -2,50 +2,79 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Нумеролог 🔮</title>
+  <title>Нумерология & Астрология 🔮</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h2>🔮 Нумерологический расчёт</h2>
 
-  <div class="container">
-    <button onclick="showSingle()">Для одного человека</button>
-    <button onclick="showCompat()">Для совместимости</button>
-
-    <!-- Разбор одного -->
-    <div id="single" class="hidden">
-      <p>Введите дату рождения:</p>
-      <input type="text" id="date_single" placeholder="ДД.ММ.ГГГГ" />
-      <br />
-      <button onclick="analyzeSingle()">Рассчитать</button>
-    </div>
-
-    <!-- Совместимость -->
-    <div id="compat" class="hidden">
-      <p>Введите даты рождения:</p>
-      <input type="text" id="date_female" placeholder="Женщина: ДД.ММ.ГГГГ" /><br />
-      <input type="text" id="date_male" placeholder="Мужчина: ДД.ММ.ГГГГ" /><br />
-      <button onclick="analyzeCompat()">Проверить совместимость</button>
+  <!-- Главное меню -->
+  <div class="container" id="menu">
+    <div class="grid">
+      <button class="card" onclick="openView('single')">Нумерология</button>
+      <button class="card" onclick="openView('compat')">Совместимость</button>
+      <button class="card" onclick="openView('natal')">Натальная карта</button>
+      <button class="card" onclick="openView('horoscope')">Гороскоп</button>
     </div>
   </div>
 
-  <!-- 🔽 здесь будет результат -->
-  <div id="result" class="container"></div>
+  <!-- Нумерология (один человек) -->
+  <div class="container hidden" id="single">
+    <div class="backline"><button class="link" onclick="backToMenu()">← Назад</button></div>
+    <div class="switch-buttons"><button onclick="showSingle()">Для одного человека</button></div>
+    <p>Введите дату рождения:</p>
+    <input type="text" id="date_single" placeholder="ДД.ММ.ГГГГ" />
+    <button onclick="analyzeSingle()">Рассчитать</button>
+  </div>
 
-  <!-- Подключаем JS -->
+  <!-- Совместимость -->
+  <div class="container hidden" id="compat">
+    <div class="backline"><button class="link" onclick="backToMenu()">← Назад</button></div>
+    <div class="switch-buttons"><button onclick="showCompat()">Для совместимости</button></div>
+    <p>Введите даты рождения:</p>
+    <input type="text" id="date_female" placeholder="Женщина: ДД.ММ.ГГГГ" />
+    <input type="text" id="date_male" placeholder="Мужчина: ДД.ММ.ГГГГ" />
+    <button onclick="analyzeCompat()">Проверить совместимость</button>
+  </div>
+
+  <!-- Натальная карта -->
+  <div class="container hidden" id="natal">
+    <div class="backline"><button class="link" onclick="backToMenu()">← Назад</button></div>
+    <p>Данные рождения:</p>
+    <input type="text" id="natal_date"  placeholder="Дата: ДД.ММ.ГГГГ" />
+    <input type="text" id="natal_time"  placeholder="Время: ЧЧ:ММ" />
+    <input type="text" id="natal_place" placeholder="Место: Город, страна" />
+    <button onclick="analyzeNatal()">Построить разбор</button>
+  </div>
+
+  <!-- Гороскоп -->
+  <div class="container hidden" id="horoscope">
+    <div class="backline"><button class="link" onclick="backToMenu()">← Назад</button></div>
+    <p>Выберите знак и период:</p>
+    <select id="hs_sign">
+      <option>Овен</option><option>Телец</option><option>Близнецы</option><option>Рак</option>
+      <option>Лев</option><option>Дева</option><option>Весы</option><option>Скорпион</option>
+      <option>Стрелец</option><option>Козерог</option><option>Водолей</option><option>Рыбы</option>
+    </select>
+    <select id="hs_period"><option>неделя</option><option>месяц</option></select>
+    <button onclick="getHoroscope()">Показать гороскоп</button>
+  </div>
+
+  <!-- Loader -->
+  <div id="loader" class="hidden">
+    <div class="spinner"></div>
+    <p>✨ Идёт расчёт... Подождите...</p>
+  </div>
+    
+  <!-- Результат -->
+  <div id="result" class="container hidden"></div>
+
   <script src="app.js"></script>
   <script>
-    function showSingle() {
-      document.getElementById("single").classList.remove("hidden");
-      document.getElementById("compat").classList.add("hidden");
-    }
-
-    function showCompat() {
-      document.getElementById("compat").classList.remove("hidden");
-      document.getElementById("single").classList.add("hidden");
-    }
-
+    function openView(id){ hideAll(); document.getElementById(id).classList.remove('hidden'); }
+    function backToMenu(){ hideAll(); document.getElementById('menu').classList.remove('hidden'); document.getElementById('result').classList.add('hidden'); }
+    function hideAll(){ ['menu','single','compat','natal','horoscope'].forEach(i=>document.getElementById(i)?.classList.add('hidden')); }
     Telegram.WebApp.ready();
   </script>
 </body>
