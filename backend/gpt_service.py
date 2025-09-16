@@ -1,4 +1,5 @@
 import logging
+import requests
 from openai import OpenAI
 from config import OPENAI_API_KEY
 
@@ -82,25 +83,86 @@ def gpt_natal(payload: dict) -> str:
     _log_usage(r, "Natal")
     return r.choices[0].message.content
 
-# --- Гороскоп ---
+# --- Гороскоп с Aztro API ---
+period_map = {
+    "сегодня": "today",
+    "завтра": "tomorrow"
+    # "неделя" обработаем отдельно
+}
+
 def gpt_horoscope(payload: dict) -> str:
-    # payload: {"sign":"Овен", "period":"неделя"|"месяц"}
-    prompt = (
-        "Ты — астролог. Напиши позитивный, практичный гороскоп без фатализма.\n"
-        "Формат:\n"
-        "✨ Общий фон\n"
-        "💼 Работа и деньги\n"
-        "❤️ Отношения\n"
-        "🌱 Здоровье и ресурс\n"
-        "🌟 Совет\n\n"
-        f"Знак: {payload.get('sign','')}, период: {payload.get('period','')}\n"
-    )
+    sign_map = {
+        "Овен": "aries", "Телец": "taurus", "Близнецы": "gemini", "Рак": "cancer",
+        "Лев": "leo", "Дева": "virgo", "Весы": "libra", "Скорпион": "scorpio",
+        "Стрелец": "sagittarius", "Козерог": "capricorn", "Водолей": "aquarius", "Рыбы": "pisces"
+    }
 
-    r = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=500
-    )
+    sign = sign_map.get(payload.get("sign"), "aries")
+    period = payload.get("period", "сегодня")
 
-    _log_usage(r, "Horoscope")
-    return r.choices[0].message.content
+    if period == "неделя":
+        # ⚡ Трюк: берём "сегодня", а GPT просим расширить до недели
+        resp = requests.post(f"https://aztro.sameerkumar.website/?sign={sign}&day=today")
+        if resp.status_code != 200:
+            return "⚠️ Ошибка: не удалось получить данные гороскопа."
+        raw = resp.json()
+
+        prompt = (
+            f"Данные для гороскопа ({payload.get('sign')}):\n"
+            f"Описание: {raw.get('description')}\n"
+            f"Совместимость: {raw.get('compatibility')}\n"
+            f"Настроение: {raw.get('mood')}\n"
+            f"Цвет: {raw.get('color')}\n"
+            f"Счастливое число: {raw.get('lucky_number')}\n"
+            f"Счастливое время: {raw.get('lucky_time')}\n\n"
+            "Сделай подробный гороскоп на 7 дней вперёд. "
+            "Разбей по дням недели (Пн, Вт, Ср, ...), указывая общую атмосферу, "
+            "работу/деньги, отношения, здоровье и совет."
+        )
+
+        r = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=900
+        )
+        _log_usage(r, "Horoscope-Week")
+        return {
+            "date": "неделю",
+            "interpretation": r.choices[0].message.content
+        }
+
+    else:
+        # день = сегодня/завтра
+        day_key = period_map.get(period, "today")
+        resp = requests.post(f"https://aztro.sameerkumar.website/?sign={sign}&day={day_key}")
+        if resp.status_code != 200:
+            return "⚠️ Ошибка: не удалось получить данные гороскопа."
+        raw = resp.json()
+
+        prompt = (
+            f"Гороскоп для {payload.get('sign')} ({period}, {raw.get('current_date')}):\n\n"
+            f"Описание: {raw.get('description')}\n"
+            f"Совместимость: {raw.get('compatibility')}\n"
+            f"Настроение: {raw.get('mood')}\n"
+            f"Цвет: {raw.get('color')}\n"
+            f"Счастливое число: {raw.get('lucky_number')}\n"
+            f"Счастливое время: {raw.get('lucky_time')}\n\n"
+            "Сделай красивый гороскоп в формате:\n"
+            "✨ Общая атмосфера\n"
+            "💼 Работа и деньги\n"
+            "❤️ Отношения\n"
+            "🌱 Здоровье и ресурс\n"
+            "🌟 Совет\n\n"
+            "Пиши живо и позитивно."
+        )
+
+        r = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=600
+        )
+        _log_usage(r, "Horoscope")
+        return {
+            "date": raw.get("current_date"),
+            "interpretation": r.choices[0].message.content
+        }
