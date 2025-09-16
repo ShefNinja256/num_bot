@@ -79,7 +79,7 @@ async function analyzeNatal() {
 }
 
 // --- Гороскоп ---
-async function getHoroscope() {
+async function getHoroscope(){
   const sign = document.getElementById("hs_sign").value;
   const period = document.getElementById("hs_period").value;
 
@@ -87,12 +87,16 @@ async function getHoroscope() {
 
   try {
     const res = await fetch(`${API}/horoscope`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sign, period })
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({sign, period})
     });
     const data = await res.json();
-    showResult(`<h3>♈ Гороскоп для ${sign} (${period})</h3><p>${data.interpretation}</p>`);
+
+    // Если сервер вернул дату
+    const dateLabel = data.date || period;  
+
+    showResult(`<h3>♈ ${sign} — гороскоп на ${dateLabel}</h3><p>${data.interpretation}</p>`);
   } catch (err) {
     alert("⚠️ Ошибка загрузки гороскопа.");
     console.error(err);
@@ -100,6 +104,7 @@ async function getHoroscope() {
     hideLoader();
   }
 }
+
 // заглушки для старых кнопок (если где-то вызываются)
 function showSingle(){}; function showCompat(){};
 

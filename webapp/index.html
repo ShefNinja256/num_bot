@@ -50,16 +50,23 @@
 
   <!-- Гороскоп -->
   <div class="container hidden" id="horoscope">
-    <div class="backline"><button class="link" onclick="backToMenu()">← Назад</button></div>
+    <div class="backline">
+      <button class="link" onclick="backToMenu()">← Назад</button>
+    </div>
     <p>Выберите знак и период:</p>
     <select id="hs_sign">
       <option>Овен</option><option>Телец</option><option>Близнецы</option><option>Рак</option>
       <option>Лев</option><option>Дева</option><option>Весы</option><option>Скорпион</option>
       <option>Стрелец</option><option>Козерог</option><option>Водолей</option><option>Рыбы</option>
     </select>
-    <select id="hs_period"><option>неделя</option><option>месяц</option></select>
+    <select id="hs_period">
+      <option selected>сегодня</option>
+      <option>завтра</option>
+      <option>вчера</option>
+    </select>
     <button onclick="getHoroscope()">Показать гороскоп</button>
   </div>
+
 
   <!-- Loader -->
   <div id="loader" class="hidden">
